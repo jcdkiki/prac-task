@@ -240,10 +240,18 @@ class AVLTree:
             self = self.right
         return self
 
-    def join(self, t):
-        res = AVLTree.Node.join(self.root, t.root)
-        AVLTree.Node.clear(self.root)
-        self.root = res
+    @staticmethod
+    def _count_nodes(root):
+        if root is None:
+            return 0
+        return 1 + AVLTree._count_nodes(root.left) + AVLTree._count_nodes(root.right)
+
+    def join(self, other):
+        new_root = self.Node.join(self.root, other.root)
+        self.root = new_root
+        self.len = self._count_nodes(new_root)
+        other.root = None
+        other.len = 0
 
     def split(self, x):
         def _split(node):

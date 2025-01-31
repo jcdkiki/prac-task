@@ -7,6 +7,8 @@ N_ELEMENTS = 30
 
 @pytest.fixture
 def avl_tree_and_set():
+    os.makedirs("draw/erase", exist_ok=True)
+
     avl = AVLTree()
     ref_set = set()
     for i in range(N_ELEMENTS):
@@ -103,12 +105,7 @@ def test_erase_many(avl_tree_and_set):
 
         is_avl(avl.root)
         check_elements(avl, ref_set)
-
-        filename = f"draw/erase/{i}-{x}"
-        draw_tree(avl, filename)
-        os.system(f"cp {filename}.png draw/frames/{i}.png")
-
-    os.system("ffmpeg -framerate 10 -i draw/frames/%d.png draw/erase.mp4 2> /dev/null")
+        draw_tree(avl, f"draw/erase/{i}-{x}")
 
 def test_erase_minmax_empty():
     tree = AVLTree()
@@ -132,8 +129,9 @@ def test_join():
         t1.insert(i*2)
         t2.insert(i*2 + 1)
     
-    
     t1.join(t2)
+    is_avl(t1.root)
+    
     arr = []
     AVLTree.Node.in_order(t1.root, lambda node: arr.append(node.val))
     assert arr == list(s)
@@ -165,9 +163,4 @@ def test_split():
     draw_tree(avl2, "draw/split2")
 
 if __name__ == "__main__":
-    os.makedirs("draw/erase", exist_ok=True)
-    os.makedirs("draw/frames", exist_ok=True)
-
     pytest.main()
-
-    os.system("rm -rf draw/*.dot draw/erase/*.dot draw/frames")
